@@ -151,6 +151,7 @@ public class Questao1 extends javax.swing.JFrame {
     }//GEN-LAST:event_cbOperacaoActionPerformed
 
     private void btnGoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGoActionPerformed
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         String action = cbOperacao.getSelectedItem().toString();
 
         Mat image1 = Imgcodecs.imread(urlImg1);
