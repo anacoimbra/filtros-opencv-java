@@ -298,7 +298,7 @@ public class Questao2 extends javax.swing.JFrame {
         Mat original_Bgr = original.clone();
         Mat mGaussian_noise = new Mat(original_Bgr.size(), original_Bgr.type());
 
-        randn(mGaussian_noise,0,10);
+        randn(mGaussian_noise,0,50);
         for(int m = 0; m < original_Bgr.rows(); m++){
             for(int n = 0; n < original_Bgr.cols(); n++){
                 double[] val = new double[3];
@@ -325,13 +325,13 @@ public class Questao2 extends javax.swing.JFrame {
         for(int m = 0; m < saltPepper_img.rows(); m++){
             for(int n = 0; n < saltPepper_img.cols(); n++){
                 double[] val = new double[3];
-                if(mSaltPepper_noise.get(m,n)[0] < 30 && mSaltPepper_noise.get(m,n)[1] < 30 && mSaltPepper_noise.get(m,n)[2] < 30){
+                if(mSaltPepper_noise.get(m,n)[0] < 15 && mSaltPepper_noise.get(m,n)[1] < 15 && mSaltPepper_noise.get(m,n)[2] < 15){
                     for(int i = 0; i < saltPepper_img.get(m,n).length; i++){
                         val[i] = 255;
                     }
                     saltPepper_img.put(m, n, val);
                 }
-                if(mSaltPepper_noise.get(m,n)[0] > 225 && mSaltPepper_noise.get(m,n)[1] > 225 && mSaltPepper_noise.get(m,n)[2] > 225){
+                if(mSaltPepper_noise.get(m,n)[0] > 230 && mSaltPepper_noise.get(m,n)[1] > 230 && mSaltPepper_noise.get(m,n)[2] > 230){
                     for(int i = 0; i < saltPepper_img.get(m,n).length; i++){
                         val[i] = 0;
                     }

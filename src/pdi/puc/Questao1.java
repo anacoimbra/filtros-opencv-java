@@ -8,6 +8,7 @@ package pdi.puc;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.PageAttributes;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
@@ -16,6 +17,7 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 /**
  *
@@ -158,131 +160,62 @@ public class Questao1 extends javax.swing.JFrame {
         Mat image2 = Imgcodecs.imread(urlImg2);
         
         Mat output = new Mat(256,256,CvType.CV_8UC3);
+                
+        Mat image1bin = new Mat(); 
+        Mat image2bin = new Mat();
+        Imgproc.cvtColor(image1, image1bin, Imgproc.COLOR_RGB2GRAY);
+        Imgproc.cvtColor(image2, image2bin, Imgproc.COLOR_RGB2GRAY);
         
+        for(int i = 0; i < image1bin.rows(); i++){
+            for(int j = 0; j < image1bin.cols(); j++){
+                if(image1bin.get(i, j)[0] > 128){
+                    image1bin.put(i, j, 255);
+                }else{
+                    image1bin.put(i, j, 0);
+                }
+                if(image2bin.get(i, j)[0] > 128){
+                    image2bin.put(i, j, 255);
+                }else{
+                    image2bin.put(i, j, 0);
+                }
+            }
+        }
+                
         switch(action){
             case "AND":
-                for(int m = 0; m < image1.cols(); m++){
-                    for(int n = 0; n < image1.rows(); n++){
-                        double[] px1 = image1.get(n,m);              
-                        double[] px2 = image2.get(n,m);
-                        byte[] px = new byte[3];
-                        
-                        px[0] = (byte)((char)px1[0] & (char)px2[0]);
-                        px[1] = (byte)((byte)px1[1] & (byte)px2[1]);
-                        px[2] = (byte)((byte)px1[2] & (byte)px2[2]);
-                        
-                        output.put(n,m,px);
-                    }
-                }
+                Core.bitwise_and(image1bin, image2bin, output);                
+                Imgcodecs.imwrite("output.jpg", output);
                 break;
             case "OR":
-                for(int m = 0; m < image1.cols(); m++){
-                    for(int n = 0; n < image1.rows(); n++){
-                        double[] px1 = image1.get(n,m);              
-                        double[] px2 = image2.get(n,m);
-                        double[] px = new double[3];
-                        
-                        px[0] = (int)px1[0] | (int)px2[0];
-                        px[1] = (int)px1[1] | (int)px2[1];
-                        px[2] = (int)px1[2] | (int)px2[2];
-                        
-                        output.put(n,m,px);
-                    }
-                }
+                Core.bitwise_or(image1bin, image2bin, output);
+                Imgcodecs.imwrite("output.jpg", output);
                 break;
             case "XOR":
-                for(int m = 0; m < image1.cols(); m++){
-                    for(int n = 0; n < image1.rows(); n++){
-                        double[] px1 = image1.get(n,m);              
-                        double[] px2 = image2.get(n,m);
-                        double[] px = new double[3];
-                        
-                        px[0] = (int)px1[0] ^ (int)px2[0];
-                        px[1] = (int)px1[1] ^ (int)px2[1];
-                        px[2] = (int)px1[2] ^ (int)px2[2];
-                        
-                        output.put(n,m,px);
-                    }
-                }
+                Core.bitwise_xor(image1bin, image2bin, output);
+                Imgcodecs.imwrite("output.jpg", output);
                 break;
             case "NOT":
-                for(int m = 0; m < image1.cols(); m++){
-                    for(int n = 0; n < image1.rows(); n++){
-                        double[] px1 = image1.get(n,m);              
-                        double[] px2 = image2.get(n,m);
-                        double[] px = new double[3];
-                        
-                        px[0] = (-px1[0]) + 255;
-                        px[1] = (-px1[1]) + 255;
-                        px[2] = (-px1[2]) + 255;
-                        
-                        output.put(n,m,px);
-                    }
-                }
+                Core.bitwise_not(image1bin, output);
+                Imgcodecs.imwrite("output.jpg", output);
                 break;
             case "SOMA":
-                for(int m = 0; m < image1.cols(); m++){
-                    for(int n = 0; n < image1.rows(); n++){
-                        double[] px1 = image1.get(n,m);              
-                        double[] px2 = image2.get(n,m);
-                        double[] px = new double[3];
-                        
-                        px[0] = px1[0] + px2[0] - 255;
-                        px[1] = px1[1] + px2[1] - 255;
-                        px[2] = px1[2] + px2[2] - 255;
-                        
-                        output.put(n,m,px);
-                    }
-                }
+                Core.add(image1, image2, output);
+                Imgcodecs.imwrite("output.jpg", output);
                 break;
             case "SUBTRAÇÃO":
-                for(int m = 0; m < image1.cols(); m++){
-                    for(int n = 0; n < image1.rows(); n++){
-                        double[] px1 = image1.get(n,m);              
-                        double[] px2 = image2.get(n,m);
-                        double[] px = new double[3];
-                        
-                        px[0] = ((int)px2[0] - (int)px1[0]) + 255 & ((int)px1[0] - (int)px2[0]) + 255;
-                        px[1] = ((int)px2[1] - (int)px1[1]) + 255 & ((int)px1[1] - (int)px2[1]) + 255;
-                        px[2] = ((int)px2[2] - (int)px1[2]) + 255 & ((int)px1[2] - (int)px2[2]) + 255;
-                        
-                        output.put(n,m,px);
-                    }
-                }
+                Core.subtract(image1, image2, output);
+                Imgcodecs.imwrite("output.jpg", output);
                 break;
             case "MULTIPLICAÇÃO":
-                for(int m = 0; m < image1.cols(); m++){
-                    for(int n = 0; n < image1.rows(); n++){
-                        double[] px1 = image1.get(n,m);              
-                        double[] px2 = image2.get(n,m);
-                        double[] px = new double[3];
-                        
-                        px[0] = (px2[0] * px1[0]) / 255;
-                        px[1] = (px1[1] * px2[1]) / 255;
-                        px[2] = (px1[2] * px2[2]) / 255;
-                        
-                        output.put(n,m,px);
-                    }
-                }
+                Core.multiply(image1, image2, output);
+                Imgcodecs.imwrite("output.jpg", output);
                 break;
             case "DIVISÃO":
-                for(int m = 0; m < image1.cols(); m++){
-                    for(int n = 0; n < image1.rows(); n++){
-                        double[] px1 = image1.get(n,m);              
-                        double[] px2 = image2.get(n,m);
-                        double[] px = new double[3];
-                        
-                        px[0] = (px2[0] / px1[0]) * 255;
-                        px[1] = (px1[1] / px2[1]) * 255;
-                        px[2] = (px1[2] / px2[2]) * 255;
-                        
-                        output.put(n,m,px);
-                    }
-                }
+                Core.divide(image1, image2, output);
+                Imgcodecs.imwrite("output.jpg", output);
                 break;
         }
         
-        Imgcodecs.imwrite("output.jpg", output);
         System.out.println("Finalizado");
         Image out = new ImageIcon("output.jpg").getImage();
         Output image3 = new Output(out);
