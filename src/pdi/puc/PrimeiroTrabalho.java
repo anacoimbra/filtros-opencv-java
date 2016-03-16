@@ -1,7 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Trabalho realizado para a disciplina de Processamento Digital de Imagens
+ * da PUC Minas no 1° Semestre de 2016 pela aluna Ana Coimbra
+ * 
+ * 
+ * Observacoes: 
+ * 1 - Ideal utilizar imagens com resolucao 256x256. Existem algumas 
+ * na pasta do projeto para utilizacao
+ * 2 - Atualmente nao esta implementado tratamento de erros e ainda existem 
+ * alguns bugs na vizualizacao das imagens, principalmente as de saida. Entao,
+ * se for o caso, basta abrir a imagem output.jpg dentro da pasta do projeto.
  */
 package pdi.puc;
 
@@ -17,7 +24,7 @@ import javax.swing.JLabel;
 
 /**
  *
- * @author aninh
+ * @author Ana Coimbra
  */
 public class PrimeiroTrabalho extends javax.swing.JFrame {
 
@@ -81,11 +88,17 @@ public class PrimeiroTrabalho extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnFiltrosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFiltrosActionPerformed
+        /**
+         * Questao 2 : filtragem espacial - filtros passa-baixa
+         */
         Questao2 q2 = new Questao2();
         q2.setVisible(true);
     }//GEN-LAST:event_btnFiltrosActionPerformed
 
     private void btnOperacoesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOperacoesActionPerformed
+        /**
+         * Questao 1 : operacoes com imagens
+         */
         Questao1 q1 = new Questao1();
         q1.setVisible(true);
     }//GEN-LAST:event_btnOperacoesActionPerformed

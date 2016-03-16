@@ -1,7 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Trabalho realizado para a disciplina de Processamento Digital de Imagens
+ * da PUC Minas no 1° Semestre de 2016 pela aluna Ana Coimbra
+ * 
+ * 
+ * Observacoes: 
+ * 1 - Ideal utilizar imagens com resolucao 256x256. Existem algumas 
+ * na pasta do projeto para utilizacao
+ * 2 - Atualmente nao esta implementado tratamento de erros e ainda existem 
+ * alguns bugs na vizualizacao das imagens, principalmente as de saida. Entao,
+ * se for o caso, basta abrir a imagem output.jpg dentro da pasta do projeto.
  */
 package pdi.puc;
 
@@ -20,12 +27,15 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 /**
- *
- * @author aninh
+ * Classe de manipulacao do JFrame responsavel por realizar operacoes entre 
+ * duas imagens
+ * @author Ana Coimbra
  */
 public class Questao1 extends javax.swing.JFrame {
 
+    // Imagem que aparece a esquerda
     private String urlImg1 = "";
+    // Imagem que aparece a direita
     private String urlImg2 = "";
 
     /**
@@ -34,6 +44,9 @@ public class Questao1 extends javax.swing.JFrame {
     public Questao1() {
         initComponents();
          
+        /**
+         * Configura tamanho da tela
+         */
         this.setSize(800, 380);
        
     }
@@ -109,27 +122,51 @@ public class Questao1 extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    /**
+     * Metodo responsavel pelo click do botao para mostrar a imagem da esquerda
+     * @param evt evento de acao em componentes da interface
+     */
     private void btnImagem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImagem1ActionPerformed
+        /**
+         * Codigo para abrir o dialogo para escolha da imagem
+         * Aceitam se imagens do tipo JPEG, GIF e PNG
+         */
         JFileChooser arquivo1 = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-        "JPG & GIF Images", "jpg", "gif");
+        "JPG & GIF Images", "jpg", "gif", "png");
         arquivo1.setFileFilter(filter);
         int returnVal = arquivo1.showOpenDialog(getComponent(0));
         if(returnVal == JFileChooser.APPROVE_OPTION) {
             System.out.println("You chose to open this file: " +
                 arquivo1.getSelectedFile().getName());
+            
+            /**
+             * Atribuindo a urlImg1 o nome completo
+             * da imagem escolhida no dialogo aberto anteriormente
+             */
             urlImg1 = arquivo1.getSelectedFile().getName();
            
             Image img1 = (new ImageIcon(urlImg1)).getImage();
 
+            /**
+             * Exibe imagem na Tela
+             */
             Imagem1 image1 = new Imagem1(img1);
             image1.paintComponent(getGraphics());
             add(image1);
         }
     }//GEN-LAST:event_btnImagem1ActionPerformed
 
+    /**
+     * Metodo responsavel pelo click do botao que escolhe e abre a imagem da direita
+     * @param evt evento de acao de componente da interface de usuario
+     */
     private void btnImagem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImagem2ActionPerformed
+        /**
+         * Codigo para abrir o dialogo para escolha da imagem
+         * Aceitam se imagens do tipo JPEG, GIF e PNG
+         */
         JFileChooser arquivo1 = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
         "JPG & GIF Images", "jpg", "gif");
@@ -138,10 +175,16 @@ public class Questao1 extends javax.swing.JFrame {
         if(returnVal == JFileChooser.APPROVE_OPTION) {
             System.out.println("You chose to open this file: " +
                 arquivo1.getSelectedFile().getName());
+            /**
+             * Atribui a urlImg2 o caminho da imagem escolhida
+             */
             urlImg2 = arquivo1.getSelectedFile().getName();
            
             Image img1 = (new ImageIcon(urlImg2)).getImage();
             
+            /**
+             * Exibe imagem na Tela
+             */
             Imagem2 image2 = new Imagem2(img1);
             image2.paintComponent(getGraphics());
             add(image2);
@@ -152,15 +195,33 @@ public class Questao1 extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_cbOperacaoActionPerformed
 
+    /**
+     * Metodo responsavel pelo evento de click no botao para realizar as 
+     * operações entre as imagens previamente escolhidas.
+     * @param evt 
+     */
     private void btnGoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGoActionPerformed
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        /**
+         * Obtem operacao escolhida
+         */
         String action = cbOperacao.getSelectedItem().toString();
 
+        /**
+         * Transforma imagem em uma matriz para facilitar manipulacao
+         */
         Mat image1 = Imgcodecs.imread(urlImg1);
         Mat image2 = Imgcodecs.imread(urlImg2);
         
+        /**
+         * Cria matriz para imagem de saida de tamanho 256x256
+         */
         Mat output = new Mat(256,256,CvType.CV_8UC3);
-                
+        
+        /**
+         * Transforma matrizes em imagens (matrizes) binárias
+         * Limiar = 128
+         */
         Mat image1bin = new Mat(); 
         Mat image2bin = new Mat();
         Imgproc.cvtColor(image1, image1bin, Imgproc.COLOR_RGB2GRAY);
@@ -180,42 +241,74 @@ public class Questao1 extends javax.swing.JFrame {
                 }
             }
         }
-                
+        
+        /**
+         * Realiza a operacao escolhida utlizando metodos do framework opencv
+         * e salva o resultado em na imagem output.jpg
+         */
         switch(action){
             case "AND":
+                /**
+                 * bitwise_and(matriz1, matriz2, matrizSaida)
+                 */
                 Core.bitwise_and(image1bin, image2bin, output);                
                 Imgcodecs.imwrite("output.jpg", output);
                 break;
             case "OR":
+                /**
+                 * bitwise_or(matriz1, matriz2, matrizSaida)
+                 */
                 Core.bitwise_or(image1bin, image2bin, output);
                 Imgcodecs.imwrite("output.jpg", output);
                 break;
             case "XOR":
+                /**
+                 * bitwise_xor(matriz1, matriz2, matrizSaida)
+                 */
                 Core.bitwise_xor(image1bin, image2bin, output);
                 Imgcodecs.imwrite("output.jpg", output);
                 break;
             case "NOT":
+                /**
+                 * bitwise_and(matriz1, matrizSaida)
+                 * neste caso, sempre sera a imagem da esquerda
+                 */
                 Core.bitwise_not(image1bin, output);
                 Imgcodecs.imwrite("output.jpg", output);
                 break;
             case "SOMA":
+                /**
+                 * add(matriz1, matriz2, matrizSaida)
+                 */
                 Core.add(image1, image2, output);
                 Imgcodecs.imwrite("output.jpg", output);
                 break;
             case "SUBTRAÇÃO":
+                /**
+                 * subtract(matriz1, matriz2, matrizSaida)
+                 */
                 Core.subtract(image1, image2, output);
                 Imgcodecs.imwrite("output.jpg", output);
                 break;
             case "MULTIPLICAÇÃO":
+                /**
+                 * multiply(matriz1, matriz2, matrizSaida)
+                 */
                 Core.multiply(image1, image2, output);
                 Imgcodecs.imwrite("output.jpg", output);
                 break;
             case "DIVISÃO":
+                /**
+                 * divide(matriz1, matriz2, matrizSaida)
+                 */
                 Core.divide(image1, image2, output);
                 Imgcodecs.imwrite("output.jpg", output);
                 break;
         }
         
+        /**
+         * Ao finalizar a operacao, mostra imagem do resultado na Tela
+         */
         System.out.println("Finalizado");
         Image out = new ImageIcon("output.jpg").getImage();
         Output image3 = new Output(out);
@@ -268,6 +361,10 @@ public class Questao1 extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 }
 
+/**
+ * Classe para facilitar a visualizacao da imagem da esquerda
+ * @author Ana Coimbra
+ */
 class Imagem1 extends JPanel { 
     private Image img; 
     
@@ -287,6 +384,10 @@ class Imagem1 extends JPanel {
     } 
 } 
 
+/**
+ * Classe para facilitar a visualizacao da imagem da direita
+ * @author Ana Coimbra
+ */
 class Imagem2 extends JPanel { 
     private Image img; 
     
@@ -305,6 +406,10 @@ class Imagem2 extends JPanel {
     } 
 } 
 
+/**
+ * Classe para facilitar a visualizacao da imagem de resultado
+ * @author Ana Coimbra
+ */
 class Output extends JPanel { 
     private Image img; 
     

@@ -1,7 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Trabalho realizado para a disciplina de Processamento Digital de Imagens
+ * da PUC Minas no 1° Semestre de 2016 pela aluna Ana Coimbra
+ * 
+ * 
+ * Observacoes: 
+ * 1 - Ideal utilizar imagens com resolucao 256x256. Existem algumas 
+ * na pasta do projeto para utilizacao
+ * 2 - Atualmente nao esta implementado tratamento de erros e ainda existem 
+ * alguns bugs na vizualizacao das imagens, principalmente as de saida. Entao,
+ * se for o caso, basta abrir a imagem output.jpg dentro da pasta do projeto.
  */
 package pdi.puc;
 
@@ -24,8 +31,9 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 /**
- *
- * @author aninh
+ * Classe de manipulacao do JFrame responsavel por criar ruidos e aplicar 
+ * filtros espaciais
+ * @author Ana Coimbra
  */
 public class Questao2 extends javax.swing.JFrame {
 
@@ -35,9 +43,13 @@ public class Questao2 extends javax.swing.JFrame {
      */
     public Questao2() {
         initComponents();
+        /**
+         * Configura tamanho da tela para o tamanho da tela do dispositivo
+         */
         Toolkit tk = Toolkit.getDefaultToolkit();
         Dimension d = tk.getScreenSize();
         this.setSize(d.width, 720);
+        
         buttonGroup1.add(rbGaussiano);
         buttonGroup1.add(rbOriginal);
         buttonGroup1.add(rbSalPimenta);
@@ -272,7 +284,16 @@ public class Questao2 extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Metodo para resolver click no botao que escolhe a imagem que sera 
+     * utilizada para os filtros e ruidos
+     * @param evt 
+     */
     private void btnImagemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImagemActionPerformed
+        /**
+         * Abre dialogo para escolha da imagem
+         * Aceita formatos JPEG, GIF e PNG
+         */
         JFileChooser arquivo1 = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
         "Images", "jpg", "gif", "png");
@@ -281,24 +302,46 @@ public class Questao2 extends javax.swing.JFrame {
         if(returnVal == JFileChooser.APPROVE_OPTION) {
             System.out.println("You chose to open this file: " +
                 arquivo1.getSelectedFile().getName());
+            
+            /**
+             * urlImg recebe o caminho completo da imagem escolhida
+             */
             urlImg = arquivo1.getSelectedFile().getName();
            
             Image img = (new ImageIcon(urlImg)).getImage();
             
+            /**
+             * Exibe imagem na tela
+             */
             Original original = new Original(img);
             original.paintComponent(getGraphics());
             add(original);
         }
     }//GEN-LAST:event_btnImagemActionPerformed
 
+    /**
+     * 
+     * @param evt 
+     */
     private void btnRuidosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRuidosActionPerformed
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        /**
+         * Transforma imagem em matriz para facilitar manipulacao
+         */
         Mat original = Imgcodecs.imread(urlImg);
         
+        /**
+         * Geracao de ruido gaussiano
+         */
+        // faz um clone da imagem original
         Mat original_Bgr = original.clone();
+        
+        // cria uma imagem e inicializa com valores aleatorios
         Mat mGaussian_noise = new Mat(original_Bgr.size(), original_Bgr.type());
-
+        // randn(matriz destino, valor principal (espectativa), desvio padrao)
         randn(mGaussian_noise,0,50);
+        
+        // aplicacao do ruido: original(clone) + mGaussian_noise
         for(int m = 0; m < original_Bgr.rows(); m++){
             for(int n = 0; n < original_Bgr.cols(); n++){
                 double[] val = new double[3];
@@ -309,49 +352,78 @@ public class Questao2 extends javax.swing.JFrame {
             }
         }
 
+        // normalize(matriz entrada, matriz saida, valor minimo, valor maximo, tipo de normalizacao, tipo da imagem de saida)
         normalize(original_Bgr,original_Bgr,0, 255, Core.NORM_MINMAX, CvType.CV_8UC3);
         
+        // salva resultado do ruido gaussiano na imagem "gaussian.jpg"
         Imgcodecs.imwrite("gaussian.jpg", original_Bgr);
         Image img = (new ImageIcon("gaussian.jpg")).getImage();
 
+        /**
+         * Exibe imagem do ruido gaussiano na Tela
+         */
         Gaussiano gaussiano = new Gaussiano(img);
         gaussiano.paintComponent(getGraphics());
         add(gaussiano);
         
+        /**
+         * Geracao do ruido Sal e Pimenta
+         */
+        // obtem clone da matriz original
         Mat saltPepper_img = original.clone();
+        // cria matriz para o ruido e inicializa com valor aleatorios
         Mat mSaltPepper_noise = new Mat(original_Bgr.size(), saltPepper_img.type());
-
+        // randn(matriz destino, valor principal (espectativa), desvio padrao)
         randn(mSaltPepper_noise,0,255);
+        // utilizando da matriz de numeros aleatorios, verifica valores 
+        // muito baixos e os substituem por zero na matriz resultante (copia da original)
+        // e os valores muito altos sao substituidos por 255
         for(int m = 0; m < saltPepper_img.rows(); m++){
             for(int n = 0; n < saltPepper_img.cols(); n++){
                 double[] val = new double[3];
                 if(mSaltPepper_noise.get(m,n)[0] < 15 && mSaltPepper_noise.get(m,n)[1] < 15 && mSaltPepper_noise.get(m,n)[2] < 15){
                     for(int i = 0; i < saltPepper_img.get(m,n).length; i++){
-                        val[i] = 255;
+                        val[i] = 0;
                     }
                     saltPepper_img.put(m, n, val);
                 }
                 if(mSaltPepper_noise.get(m,n)[0] > 230 && mSaltPepper_noise.get(m,n)[1] > 230 && mSaltPepper_noise.get(m,n)[2] > 230){
                     for(int i = 0; i < saltPepper_img.get(m,n).length; i++){
-                        val[i] = 0;
+                        val[i] = 255;
                     }
                     saltPepper_img.put(m, n, val);
                 }
             }
         }
 
+        // normalize(matriz entrada, matriz saida, valor minimo, valor maximo, tipo de normalizacao, tipo da imagem de saida)
         normalize(saltPepper_img,saltPepper_img,0, 255, Core.NORM_MINMAX, CvType.CV_8UC3);
         
+        /**
+         * Salva imagem resultante em saltapepper.jpg
+         */
         Imgcodecs.imwrite("saltpepper.jpg", saltPepper_img);
         Image img1 = (new ImageIcon("saltpepper.jpg")).getImage();
+        
+        /**
+         * Exibe imagem na Tela
+         */
         SalPimenta salEpimenta = new SalPimenta(img1);
         salEpimenta.paintComponent(getGraphics());
         add(salEpimenta);
     }//GEN-LAST:event_btnRuidosActionPerformed
 
+    /**
+     * Metodo para resolver evento de click no botao para aplicar o filtro da
+     * media na imagem selecionada
+     * @param evt 
+     */
     private void btnMediaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMediaActionPerformed
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         String url = "";
+        /**
+         * Seleciona o src da imagem a partir da escolha do usuario na Tela
+         */
         if(rbOriginal.isSelected()){
             url = urlImg;
         }else if(rbGaussiano.isSelected()){
@@ -359,20 +431,44 @@ public class Questao2 extends javax.swing.JFrame {
         }else if(rbSalPimenta.isSelected()){
             url = "saltpepper.jpg";
         }
+        
+        /**
+         * Transforma imagem em matriz para facilitar manipulacao
+         */
         Mat img = Imgcodecs.imread(url);
+        /**
+         * Cria matriz de destino
+         */
         Mat dst = new Mat();
+        /**
+         * Aplicacao do filtro da media
+         * blur(matriz original, matriz destino, tamanho da mascara)
+         */
         Imgproc.blur(img, dst, new Size(Integer.valueOf(txtMatrixWidth.getText()),Integer.valueOf(txtMatrixHeight.getText())));
+        /**
+         * Salva o resultado em media.jpg
+         */
         Imgcodecs.imwrite("media.jpg", dst);
         
+        /**
+         * Exibe imagem na Tela
+         */
         Image img_media = (new ImageIcon("media.jpg")).getImage();
         Media media = new Media(img_media);
         media.paintComponent(getGraphics());
         add(media);
     }//GEN-LAST:event_btnMediaActionPerformed
 
+    /**
+     * Metodo para resolver o evento de click no botao que aplica o filtro da mediana
+     * @param evt 
+     */
     private void btnMedianaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMedianaActionPerformed
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         String url = "";
+        /**
+         * Obtem a url da imagem seleciona previamente pelo usuario na interface
+         */
         if(rbOriginal.isSelected()){
             url = urlImg;
         }else if(rbGaussiano.isSelected()){
@@ -380,20 +476,43 @@ public class Questao2 extends javax.swing.JFrame {
         }else if(rbSalPimenta.isSelected()){
             url = "saltpepper.jpg";
         }
+        /**
+         * Transforma imagem em matriz para facilitar manipulacao
+         */
         Mat img = Imgcodecs.imread(url);
+        /**
+         * Cria matriz de destino
+         */
         Mat dst = new Mat();
+        /**
+         * Aplica filtro da mediana
+         * medianBlur(imagem original, imagem destino, ksize)
+         */
         Imgproc.medianBlur(img, dst,Integer.valueOf(txtKsize.getText()));
+        /**
+         * Salva resultado em mediana.jpg
+         */
         Imgcodecs.imwrite("mediana.jpg", dst);
         
+        /**
+         * Exibe imagem na tela
+         */
         Image img_media = (new ImageIcon("mediana.jpg")).getImage();
         Mediana media = new Mediana(img_media);
         media.paintComponent(getGraphics());
         add(media);
     }//GEN-LAST:event_btnMedianaActionPerformed
 
+    /**
+     * Metodo que resolve o click no mouse do botao que aplica o filtro gaussiano
+     * @param evt 
+     */
     private void btnGaussianoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGaussianoActionPerformed
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         String url = "";
+        /**
+         * Seleciona a url de acordo com a imagem escolhida pelo usuario na interface
+         */
         if(rbOriginal.isSelected()){
             url = urlImg;
         }else if(rbGaussiano.isSelected()){
@@ -401,20 +520,43 @@ public class Questao2 extends javax.swing.JFrame {
         }else if(rbSalPimenta.isSelected()){
             url = "saltpepper.jpg";
         }
+        /**
+         * Transforma imagem em matriz para facilitar manipulacao
+         */
         Mat img = Imgcodecs.imread(url);
+        /**
+         * Cria matriz de destino
+         */
         Mat dst = new Mat();
+        /**
+         * Aplica o filtro gaussiano
+         * GaussianBlur(imagem original, imgagem destino, tamanho da mascara, sygmaX, sygmaY)
+         */
         Imgproc.GaussianBlur(img, dst,new Size(Integer.valueOf(txtMatrixWidth.getText()),Integer.valueOf(txtMatrixHeight.getText())),Integer.valueOf(txtSygmaX.getText()), Integer.valueOf(txtSygmaY.getText()));
+        /**
+         * Salva resultado em gaussian-blur.jpg
+         */
         Imgcodecs.imwrite("gaussian-blur.jpg", dst);
         
+        /**
+         * Exibe imagem na Tela
+         */
         Image img_gau = (new ImageIcon("gaussian-blur.jpg")).getImage();
         GaussianoBlur gau = new GaussianoBlur(img_gau);
         gau.paintComponent(getGraphics());
         add(gau);
     }//GEN-LAST:event_btnGaussianoActionPerformed
 
+    /**
+     * Metodo para resolver o evento de click no botao que aplica o filtro de maximo
+     * @param evt 
+     */
     private void btnMaximoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMaximoActionPerformed
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         String url = "";
+        /**
+         * Seleciona a url de acordo com a imagem selecionada pelo usuario
+         */
         if(rbOriginal.isSelected()){
             url = urlImg;
         }else if(rbGaussiano.isSelected()){
@@ -422,21 +564,49 @@ public class Questao2 extends javax.swing.JFrame {
         }else if(rbSalPimenta.isSelected()){
             url = "saltpepper.jpg";
         }
+        /**
+         * Transforma imagem em matriz para facilitar manipulacao
+         */ 
         Mat img = Imgcodecs.imread(url);
+        /**
+         * Cria matriz destinoo
+         */
         Mat dst = new Mat();
+        /**
+         * Cria imagem com o valor 1 em todos os pixels de 
+         * tamnho escolhido pelo usuario
+         */
         Mat one = Mat.ones(Integer.valueOf(txtMatrixWidth.getText()),Integer.valueOf(txtMatrixHeight.getText()), CvType.CV_32F);
+        /**
+         * Aplica o filtro maximo utilizando a matriz one como mascara
+         * dilate(imagem original, imagem destino, mascara)
+         */
         Imgproc.dilate(img, dst, one);
+        /**
+         * Salva o resultado na matriz maximo.jpg
+         */
         Imgcodecs.imwrite("maximo.jpg", dst);
         
+        /**
+         * Exibe imagem na tela
+         */
         Image img_gau = (new ImageIcon("maximo.jpg")).getImage();
         Maximo gau = new Maximo(img_gau);
         gau.paintComponent(getGraphics());
         add(gau);
     }//GEN-LAST:event_btnMaximoActionPerformed
 
+    /**
+     * Metodo para resolver o evento de click no botao que aplica o filtro de minimo
+     * @param evt 
+     */
     private void btnMinimoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMinimoActionPerformed
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         String url = "";
+        /**
+         * Seleciona a url de acordo com a imagem escolhida 
+         * pelo usuario na interface
+         */
         if(rbOriginal.isSelected()){
             url = urlImg;
         }else if(rbGaussiano.isSelected()){
@@ -444,12 +614,32 @@ public class Questao2 extends javax.swing.JFrame {
         }else if(rbSalPimenta.isSelected()){
             url = "saltpepper.jpg";
         }
+        /**
+         * Transforma imagem em matriz para facilitar manipulacao
+         */
         Mat img = Imgcodecs.imread(url);
+        /**
+         * Cria matriz de destino
+         */
         Mat dst = new Mat();
+        /**
+         * Cria matriz com o valor 1 em todos os pixels de 
+         * tamanho definido pelo usuario
+         */
         Mat one = Mat.ones(Integer.valueOf(txtMatrixWidth.getText()),Integer.valueOf(txtMatrixHeight.getText()), CvType.CV_32F);
+        /**
+         * Aplica o filtro minimo
+         * erode(imagem original, imagem destino, matriz de mascara)
+         */
         Imgproc.erode(img, dst, one);
+        /**
+         * Salva resultado em minimo.jpg
+         */
         Imgcodecs.imwrite("minimo.jpg", dst);
         
+        /**
+         * Exibe imagem na tela
+         */
         Image img_gau = (new ImageIcon("minimo.jpg")).getImage();
         Minimo gau = new Minimo(img_gau);
         gau.paintComponent(getGraphics());
@@ -533,6 +723,10 @@ public class Questao2 extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 }
 
+/**
+ * Classe para facilitar vizualicao da imagem original
+ * @author Ana Coimbra
+ */
 class Original extends JPanel { 
     private Image img; 
     
@@ -552,6 +746,10 @@ class Original extends JPanel {
     } 
 } 
 
+/**
+ * Classe para facilitar vizualicao da imagem com ruido gaussiano
+ * @author Ana Coimbra
+ */
 class Gaussiano extends JPanel { 
     private Image img; 
     
@@ -570,6 +768,10 @@ class Gaussiano extends JPanel {
     } 
 } 
 
+/**
+ * Classe para facilitar vizualicao da imagem com ruido sal e pimenta
+ * @author Ana Coimbra
+ */
 class SalPimenta extends JPanel { 
     private Image img; 
     
@@ -588,6 +790,10 @@ class SalPimenta extends JPanel {
     } 
 }
 
+/**
+ * Classe para facilitar vizualicao da imagem com filtro da media
+ * @author Ana Coimbra
+ */
 class Media extends JPanel { 
     private Image img; 
     
@@ -606,6 +812,10 @@ class Media extends JPanel {
     } 
 }
 
+/**
+ * Classe para facilitar vizualicao da imagem com filtro da mediana
+ * @author Ana Coimbra
+ */
 class Mediana extends JPanel { 
     private Image img; 
     
@@ -624,6 +834,10 @@ class Mediana extends JPanel {
     } 
 }
 
+/**
+ * Classe para facilitar vizualicao da imagem com filtrro gaussiano
+ * @author Ana Coimbra
+ */
 class GaussianoBlur extends JPanel { 
     private Image img; 
     
@@ -642,6 +856,10 @@ class GaussianoBlur extends JPanel {
     } 
 }
 
+/**
+ * Classe para facilitar vizualicao da imagem com filtro do maximo
+ * @author Ana Coimbra
+ */
 class Maximo extends JPanel { 
     private Image img; 
     
@@ -660,6 +878,10 @@ class Maximo extends JPanel {
     } 
 }
 
+/**
+ * Classe para facilitar vizualicao da imagem com filtro do minimo
+ * @author Ana Coimbra
+ */
 class Minimo extends JPanel { 
     private Image img; 
     
