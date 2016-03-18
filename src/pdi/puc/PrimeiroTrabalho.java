@@ -47,6 +47,7 @@ public class PrimeiroTrabalho extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         btnOperacoes = new javax.swing.JButton();
         btnFiltros = new javax.swing.JButton();
+        btnRuidos = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Processamento Digital de Imagens");
@@ -69,6 +70,14 @@ public class PrimeiroTrabalho extends javax.swing.JFrame {
         });
         jPanel1.add(btnFiltros, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 125, 207, 96));
 
+        btnRuidos.setText("Ruído");
+        btnRuidos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRuidosActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnRuidos, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, 207, 96));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -79,9 +88,7 @@ public class PrimeiroTrabalho extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(25, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -102,6 +109,14 @@ public class PrimeiroTrabalho extends javax.swing.JFrame {
         Questao1 q1 = new Questao1();
         q1.setVisible(true);
     }//GEN-LAST:event_btnOperacoesActionPerformed
+
+    private void btnRuidosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRuidosActionPerformed
+        /**
+         * Questao 3 : testes com desvio padrao
+         */
+        Questao3 q3 = new Questao3();
+        q3.setVisible(true);
+    }//GEN-LAST:event_btnRuidosActionPerformed
 
     /**
      * @param args the command line arguments
@@ -145,6 +160,7 @@ public class PrimeiroTrabalho extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnFiltros;
     private javax.swing.JButton btnOperacoes;
+    private javax.swing.JButton btnRuidos;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }
