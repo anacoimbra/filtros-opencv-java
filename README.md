@@ -1,4 +1,4 @@
-# Filtragem e Operações em Imagens com Opencv
+﻿# Filtragem e Operações em Imagens com Opencv
 
 Aplicação para desktop feita em Java que realiza operações de adição, subtração, multiplicação, divisão, lógicas (and, not, or, xor), faz aplicação de ruídos gaussiano aditivo e sal e pimenta e, por fim, aplica filtros como media, mediana, moda, gaussiano, máximo, mínimo.
 
@@ -13,6 +13,8 @@ O projeto está configurado para abrir com o NetBeans IDE, mas algumas outras ID
 
 * Ideal utilizar imagens com resolucao 256x256. Existem algumas 
 na pasta do projeto para utilizacao
+* As imagens devem estar na pasta raiz do projeto pois, devido a um 
+problema de segurança, o programa não consegue ler e manipular arquivos em outros diretórios
 * Atualmente nao esta implementado tratamento de erros e ainda existem 
 alguns bugs na vizualizacao das imagens, principalmente as de saida. Entao,
 se for o caso, basta abrir a imagem output.jpg dentro da pasta do projeto.

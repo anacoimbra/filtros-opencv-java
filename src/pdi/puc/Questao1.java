@@ -6,7 +6,10 @@
  * Observacoes: 
  * 1 - Ideal utilizar imagens com resolucao 256x256. Existem algumas 
  * na pasta do projeto para utilizacao
- * 2 - Atualmente nao esta implementado tratamento de erros e ainda existem 
+ * 2 - As imagens devem estar na pasta raiz do projeto pois, devido a um 
+ * problema de segurança, o programa não consegue ler e manipular arquivos em
+ * outros diretórios
+ * 3 - Atualmente nao esta implementado tratamento de erros e ainda existem 
  * alguns bugs na vizualizacao das imagens, principalmente as de saida. Entao,
  * se for o caso, basta abrir a imagem output.jpg dentro da pasta do projeto.
  */
@@ -139,7 +142,7 @@ public class Questao1 extends javax.swing.JFrame {
         int returnVal = arquivo1.showOpenDialog(getComponent(0));
         if(returnVal == JFileChooser.APPROVE_OPTION) {
             System.out.println("You chose to open this file: " +
-                arquivo1.getSelectedFile().getName());
+                arquivo1.getSelectedFile().getAbsolutePath());
             
             /**
              * Atribuindo a urlImg1 o nome completo
@@ -178,7 +181,7 @@ public class Questao1 extends javax.swing.JFrame {
             /**
              * Atribui a urlImg2 o caminho da imagem escolhida
              */
-            urlImg2 = arquivo1.getSelectedFile().getName();
+            urlImg2 = arquivo1.getSelectedFile().getAbsolutePath();
            
             Image img1 = (new ImageIcon(urlImg2)).getImage();
             
